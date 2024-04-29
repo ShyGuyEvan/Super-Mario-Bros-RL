@@ -9,8 +9,39 @@ from nes_py.wrappers import JoypadSpace
 from wrappers import apply_wrappers
 
 import os
+import csv
+from datetime import datetime
 
 from utils import *
+
+# Define the directory to save log files
+log_dir = "logs"
+os.makedirs(log_dir, exist_ok=True)
+
+# Generate timestamp for the filename
+timestamp =  get_current_date_time_string()
+filename = f"episode_logs_{timestamp}.csv"
+filepath = os.path.join(log_dir, filename)
+
+# Define the directory to save model checkpoints
+model_checkpoint_dir = "model_checkpoints"
+os.makedirs(model_checkpoint_dir, exist_ok=True)
+
+# Function to save the model checkpoint
+def save_model_checkpoint(agent, episode):
+    checkpoint_path = os.path.join(model_checkpoint_dir, f"model_episode_{episode}.pt")
+    torch.save(agent.state_dict(), checkpoint_path)
+
+# Function to load the model checkpoint
+def load_model_checkpoint(agent, episode):
+    checkpoint_path = os.path.join(model_checkpoint_dir, f"model_episode_{episode}.pt")
+    agent.load_state_dict(torch.load(checkpoint_path))
+    
+# Define the path to save the episode logs CSV file
+episode_logs_path = "episode_logs.csv"
+
+# Define the fieldnames for the CSV file
+fieldnames = ["Episode", "Total Reward", "Epsilon", "Replay Buffer Size", "Learn Step Counter"]
 
 model_path = os.path.join("models", get_current_date_time_string())
 os.makedirs(model_path, exist_ok=True)
@@ -44,7 +75,13 @@ if not SHOULD_TRAIN:
 env.reset()
 next_state, reward, done, trunc, info = env.step(action=0)
 
-for i in range(NUM_OF_EPISODES):    
+
+for i in range(NUM_OF_EPISODES):
+    if i == 0:  # Write the header only once before writing episode logs
+        with open(filepath, "w", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+        
     print("Episode:", i)
     done = False
     state, _ = env.reset()
@@ -62,9 +99,19 @@ for i in range(NUM_OF_EPISODES):
 
     print("Total reward:", total_reward, "Epsilon:", agent.epsilon, "Size of replay buffer:", len(agent.replay_buffer), "Learn step counter:", agent.learn_step_counter)
 
+    # Open the CSV file in append mode and write the episode logs
+    with open(filepath, "a", newline="") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerow({
+            "Episode": i,
+            "Total Reward": total_reward,
+            "Epsilon": agent.epsilon,
+            "Replay Buffer Size": len(agent.replay_buffer),
+            "Learn Step Counter": agent.learn_step_counter
+        })
+
     if SHOULD_TRAIN and (i + 1) % CKPT_SAVE_INTERVAL == 0:
         agent.save_model(os.path.join(model_path, "model_" + str(i + 1) + "_iter.pt"))
 
     print("Total reward:", total_reward)
-
 env.close()

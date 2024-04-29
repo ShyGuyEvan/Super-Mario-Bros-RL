@@ -2,3 +2,6 @@ __pycache__/
 test.py
 models/
 *.png
+episode_logs.csv
+model_checkpoints/
+logs/
