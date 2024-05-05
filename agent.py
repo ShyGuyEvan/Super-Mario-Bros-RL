@@ -46,6 +46,7 @@ class Agent:
     def choose_action(self, observation):
         if np.random.random() < self.epsilon:
             return np.random.randint(self.num_actions)
+        
         # Passing in a list of numpy arrays is slower than creating a tensor from a numpy array
         # Hence the `np.array(observation)` instead of `observation`
         # observation is a LIST of numpy arrays because of the LazyFrame wrapper
@@ -108,8 +109,4 @@ class Agent:
 
         self.learn_step_counter += 1
         self.decay_epsilon()
-
-
         
-
-

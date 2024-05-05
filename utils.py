@@ -4,7 +4,6 @@ import datetime
 def get_current_date_time_string():
     return datetime.datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
 
-
 class Timer():
     def __init__(self):
         self.times = []
@@ -23,3 +22,4 @@ class Timer():
 
     def average(self):
         return sum(self.times) / len(self.times)
+    
