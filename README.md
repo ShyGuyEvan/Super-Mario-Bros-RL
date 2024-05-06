@@ -1,6 +1,6 @@
 # Super Mario Bros Reinforcement Learning
 
-C:\Users\evang\Desktop\VT MIT Classwork\ML\Super-Mario-Bros-RL\MarioRLSuccess.gif
+![MarioRLSuccess](https://github.com/ShyGuyEvan/Super-Mario-Bros-RL/assets/142952691/598fc323-b875-4832-9127-5f65fa6c68d8)
 
 Let's create an AI that's able to play Super Mario Bros! We'll be using Double Deep Q Network Reinforcement Learning algorithm to do this.
 
